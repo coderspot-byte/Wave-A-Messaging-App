@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "484748355402",
+    "project_id": "wave---a-signal-to-you",
+    "storage_bucket": "wave---a-signal-to-you.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484748355402:android:5bd67853ccc58b33f503b3",
+        "android_client_info": {
+          "package_name": "com.gpp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "484748355402-k48vqc9vtk66vfteb41plqc31lf3ojrn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCM2FHeuOYDxBBelPH50WYQx_KqzJE_MAM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "484748355402-k48vqc9vtk66vfteb41plqc31lf3ojrn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+    <item
+        android:id="@+id/aes"
+        android:title="Advanced Encryption Standard "
+        />
+
+    <item
+        android:id="@+id/fed"
+        android:title="Firebase Encryption-Decryption"
+         />
+
+    </group>
+</menu>
