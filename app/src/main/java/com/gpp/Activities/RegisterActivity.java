@@ -59,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
         ans1 = getIntent().getStringExtra("IMPMOB");
         mobile.setText(ans1);
         mobile.setEnabled(false);
-        alreadyuser.setOnClickListener(new View.OnClickListener() {
+        alreadyuser.setOnClickListener(new View.OnClickListener() { //if already a user he will go to login page
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RegisterActivity.this , LoginActivity.class);
@@ -67,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        alreadyuser1.setOnClickListener(new View.OnClickListener() {
+        alreadyuser1.setOnClickListener(new View.OnClickListener() {//if he clicks on plus symbol to go to the login page
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RegisterActivity.this , LoginActivity.class);
@@ -123,7 +123,7 @@ public class RegisterActivity extends AppCompatActivity {
                             {
                                 Intent intent = new Intent(RegisterActivity.this , ProfilePicActivity.class);
                                 String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                intent.putExtra("NAME" , naming);
+                                intent.putExtra("NAME" , naming);//we are sending all this to profilepic activity
                                 intent.putExtra("MOB" , ans1);
                                 intent.putExtra("MAIL" , mail);
                                 intent.putExtra("PASS",pass);

@@ -2,10 +2,10 @@ package com.gpp.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -13,16 +13,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -39,110 +43,70 @@ import com.karumi.dexter.listener.single.PermissionListener;
 import java.io.InputStream;
 import java.util.Random;
 
-import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
-import de.hdodenhof.circleimageview.CircleImageView;
+public class ProfileActivity extends AppCompatActivity {
 
-public class ProfilePicActivity extends Activity { //here we use firebase storage
-
-    ImageView bk;
-    ImageView cam;
+    TextView n, e, p;
+    ImageView img, cam;
+    DatabaseReference reference;
+    FirebaseUser fuser;
     Uri filepath;
     Bitmap bitmap;
-    CircularProgressButton resg;
-    String name;
-    String uid;
-    String mobile;
-    String status="offline";
-    String email , password;
-    CircleImageView pic;
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    FirebaseAuth mAuth;
+    String sname,smail,sphone,sstatus;
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_profile);
 
-        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.M)
-        {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-//            window.setStatusBarColor(Color.TRANSPARENT);
-            window.setStatusBarColor(getResources().getColor(R.color.register_bk_color));
-        }
-        setContentView(R.layout.activity_profile_pic);
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
-        bk = (ImageView)findViewById(R.id.bk);
+        n = (TextView) findViewById(R.id.name);
+        e = (TextView) findViewById(R.id.mail);
+        p = (TextView) findViewById(R.id.phone);
+        img = findViewById(R.id.pic);
+        cam = findViewById(R.id.camera);
 
-        bk.setOnClickListener(new View.OnClickListener() {//for exiting from update profile pic activity
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("users").child(fuser.getUid());
+
+        reference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder
-                        = new AlertDialog
-                        .Builder(ProfilePicActivity.this);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                builder.setMessage("Do you want to exit ?");
-                builder.setCancelable(false);
-                builder
-                        .setPositiveButton(
-                                "Yes",
-                                new DialogInterface
-                                        .OnClickListener() {
+                User user = snapshot.getValue(User.class);
+                n.setText(user.getName());
+                e.setText(user.getMail());
+                p.setText(user.getMob());
+                sname=user.getName();
+                smail=user.getMail();
+                sphone=user.getMob();
+                sstatus=user.getStatus();
+                if (user.getPimage().equals("default")) {
+                    img.setImageResource(R.drawable.pppp);
+                } else {
+                    Glide.with(getApplicationContext()).load(user.getPimage()).into(img);
+                }
+            }
 
-                                    @Override
-                                    public void onClick(DialogInterface dialog,
-                                                        int which)
-                                    {
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-                                        // When the user click yes button
-                                        // then app will close
-                                        finishAffinity();
-                                    }
-                                });
-
-                builder
-                        .setNegativeButton(
-                                "No",
-                                new DialogInterface
-                                        .OnClickListener() {
-
-                                    @Override
-                                    public void onClick(DialogInterface dialog,
-                                                        int which)
-                                    {
-
-                                        // If user click no
-                                        // then dialog box is canceled.
-                                        dialog.cancel();
-                                    }
-                                });
-
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.register_bk_color));
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.register_bk_color));
             }
         });
-
-        //upload Image function
-        cam = (ImageView)findViewById(R.id.camera);
-        resg = (CircularProgressButton)findViewById(R.id.resg);
-        pic = (CircleImageView)findViewById(R.id.pic);
-        name = getIntent().getStringExtra("NAME");
-        mobile = getIntent().getStringExtra("MOB");
-        email = getIntent().getStringExtra("MAIL");
-        password = getIntent().getStringExtra("PASS");
-        uid = getIntent().getStringExtra("UID");
-
-        cam.setOnClickListener(new View.OnClickListener() { //to upload the photo
+        cam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Dexter.withActivity(ProfilePicActivity.this)
+                Dexter.withActivity(ProfileActivity.this)
                         .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                         .withListener(new PermissionListener() {
                             @Override
                             public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                                Intent intent = new Intent(Intent.ACTION_PICK);  //if permission is granted we go to the images on our app
+                                Intent intent = new Intent(Intent.ACTION_PICK);
                                 intent.setType("image/*");
-                                startActivityForResult(Intent.createChooser(intent , "Select Profile Image " ) , 1);//as we want
-                                // to bring image from gallery
+                                startActivityForResult(Intent.createChooser(intent , "Select Profile Image " ) , 1);
                             }
 
                             @Override
@@ -158,71 +122,29 @@ public class ProfilePicActivity extends Activity { //here we use firebase storag
             }
         });
 
-        resg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(filepath == null)
-                {
-                    AlertDialog.Builder builder
-                            = new AlertDialog
-                            .Builder(ProfilePicActivity.this);
-
-                    builder.setMessage("Upload Profile Picture");
-                    builder.setCancelable(false);
-                    builder
-                            .setPositiveButton(
-                                    "OK",
-                                    new DialogInterface
-                                            .OnClickListener() {
-
-                                        @Override
-                                        public void onClick(DialogInterface dialog,
-                                                            int which)
-                                        {
-
-                                        }
-                                    });
-
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.register_bk_color));
-
-                }
-                else
-                {
-                    uploadtofirebase();
-                }
-
-            }
-        });
-
     }
-
-
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)//this is called from permission granted and here we set the filepath
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
 
         if(requestCode == 1 && resultCode==RESULT_OK)
         {
-                filepath = data.getData(); //if user has selected image then filepath
-                try {
-                    InputStream inputStream = getContentResolver().openInputStream(filepath);
-                    bitmap  = BitmapFactory.decodeStream(inputStream);
-                    pic.setImageBitmap(bitmap);
+            filepath = data.getData();
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(filepath);
+                bitmap  = BitmapFactory.decodeStream(inputStream);
+                img.setImageBitmap(bitmap);
+                uploadtofirebase();
 
-                }
-                catch (Exception ex)
-                {
+            }
+            catch (Exception ex)
+            {
 
-                }
+            }
 
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-
     private void uploadtofirebase()
     {
 
@@ -241,9 +163,9 @@ public class ProfilePicActivity extends Activity { //here we use firebase storag
                         pd.dismiss();
                         AlertDialog.Builder builder
                                 = new AlertDialog
-                                .Builder(ProfilePicActivity.this);
+                                .Builder(ProfileActivity.this);
 
-                        builder.setTitle("User Registered");
+                        builder.setTitle("Profile Picture Updated");
                         builder.setCancelable(false);
                         builder
                                 .setPositiveButton(
@@ -262,10 +184,9 @@ public class ProfilePicActivity extends Activity { //here we use firebase storag
 
                                                         FirebaseDatabase db = FirebaseDatabase.getInstance();
                                                         DatabaseReference root = db.getReference("users");
-                                                        User user = new User(uid,name, uri.toString(),email,mobile,status);
+                                                        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                                        User user = new User(uid,sname, uri.toString(),smail,sphone,sstatus);
                                                         root.child(uid).setValue(user);
-                                                        Intent intent = new Intent(ProfilePicActivity.this , LoginActivity.class);
-                                                        startActivity(intent);
                                                         finish();
 
 
@@ -297,7 +218,7 @@ public class ProfilePicActivity extends Activity { //here we use firebase storag
 
         AlertDialog.Builder builder
                 = new AlertDialog
-                .Builder(ProfilePicActivity.this);
+                .Builder(ProfileActivity.this);
 
         builder.setMessage("Do you want to exit ?");
         builder.setCancelable(false);
@@ -341,5 +262,4 @@ public class ProfilePicActivity extends Activity { //here we use firebase storag
         alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.register_bk_color));
 
     }
-
 }

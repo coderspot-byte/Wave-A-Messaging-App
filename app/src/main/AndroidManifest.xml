@@ -17,6 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WaveASignalToYou">
+        <activity android:name=".Activities.ProfileActivity"></activity>
         <activity
             android:name=".Activities.MessageActivity"
             android:theme="@style/AppTheme.NoActionBar" />

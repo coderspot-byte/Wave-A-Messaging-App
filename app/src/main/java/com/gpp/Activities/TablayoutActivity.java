@@ -83,6 +83,9 @@ public class TablayoutActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch(item.getItemId())
         {
+            case R.id.profile:
+                startActivity(new Intent(TablayoutActivity.this , ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                return true;
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(TablayoutActivity.this , LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));

@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         newuser = (TextView)findViewById(R.id.newuser);
         newuser1 = (ImageView)findViewById(R.id.newuser1);
 
-        newuser.setOnClickListener(new View.OnClickListener() {
+        newuser.setOnClickListener(new View.OnClickListener() {// if selected on register now
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this , RegisterActivity.class);
@@ -67,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        newuser1.setOnClickListener(new View.OnClickListener() {
+        newuser1.setOnClickListener(new View.OnClickListener() { //if selected on plus image to got to register pg
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this , RegisterActivity.class);
@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         bt = (CircularProgressButton)findViewById(R.id.login);
         mAuth = FirebaseAuth.getInstance();
 
-        bt.setOnClickListener(new View.OnClickListener() {
+        bt.setOnClickListener(new View.OnClickListener() { //if clicked on login button
             @Override
             public void onClick(View v) {
 
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                 mAuth.signInWithEmailAndPassword(mail , pass).addOnCompleteListener(LoginActivity.this,new OnCompleteListener<AuthResult>() {
-
+//firebase authentication using mail and password
 
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {

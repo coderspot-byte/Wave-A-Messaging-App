@@ -79,6 +79,7 @@ public class otp extends Activity {
         ans = ans1 + phoneEt.getText().toString();
         fi = phoneEt.getText().toString().trim();
         codeEt=(EditText)findViewById(R.id.codeEt);
+
         mCallbacks=new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
@@ -108,7 +109,7 @@ public class otp extends Activity {
                 Toast.makeText(otp.this,"Verification Code Sent",Toast.LENGTH_SHORT).show();
             }
         };
-        phoneContinueBtn =(CircularProgressButton) findViewById(R.id.phoneContinueBtn);
+        phoneContinueBtn =(CircularProgressButton) findViewById(R.id.phoneContinueBtn);//send otp button
         phoneContinueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

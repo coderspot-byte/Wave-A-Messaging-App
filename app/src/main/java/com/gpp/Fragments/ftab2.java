@@ -55,17 +55,17 @@ public class ftab2 extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 mUsers.clear();
 
-                for(DataSnapshot dataSnapshot : snapshot.getChildren())
+                for(DataSnapshot dataSnapshot : snapshot.getChildren())//all data of one user is passed to datasnapshot
                 {
                     User user = dataSnapshot.getValue(User.class);
                     assert firebaseUser != null;
                     assert user != null;
                     if(userid.equals(firebaseUser.getUid()))
                     {
-                        mUsers.add(user);
+                        mUsers.add(user);  //here we add each user in arraylist
                     }
                 }
-                userAdapter  = new UserAdapter(getContext(),mUsers,false);
+                userAdapter  = new UserAdapter(getContext(),mUsers,false);//here arraylist is passed to useradapter
                 recyclerView.setAdapter(userAdapter);
 
             }
